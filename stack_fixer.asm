@@ -31,3 +31,13 @@ STOP:
 	LD $STACK_START
 	ST $STACK_POINTER
 	HLT
+
+
+A + B * C / D + E
+A B C * D / + E +
+B * C / D + A + E
+
+
+A * B + C / D * E + F * G
+A B * C D / E * + F G * +
+A * B + C / D * E + F * G
