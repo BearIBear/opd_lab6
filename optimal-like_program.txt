@@ -1,0 +1,41 @@
+ORG 0x569
+SYMBOL: WORD 0x5A9
+TEMP_SYMBOL: WORD ?
+
+INPUT:
+	CLA
+	LEFT_SYMBOL:
+		IN 5 ; Грузим SR в аккумулятор
+		AND #0x40 ; Чекаем бит готовности в SR
+		BEQ LEFT_SYMBOL ; Ждём готовность
+		
+		IN 4 ; Грузим DR
+		CMP #0 ; Устанавливаем флаги, потому что тяжело было заставлять БЭВМ флаги при IN устанавливать
+		BEQ LEFT_STOP ; Остановка при NUL'е
+		SWAB ; В левую часть переносим
+		ST (SYMBOL) ; Сохраняем
+	CLA
+	RIGHT_SYMBOL:
+		IN 5 ; Грузим SR в аккумулятор
+		AND #0x40 ; Чекаем бит готовности в SR
+		BEQ RIGHT_SYMBOL ; Ждём готовность
+		
+		IN 4
+		ST $TEMP_SYMBOL
+		CMP #0
+		BEQ RIGHT_STOP ; Если NUL, то стоп
+		LD (SYMBOL)
+		ADD TEMP_SYMBOL ; Грузим второй символ в правую часть
+		ST (SYMBOL)+
+	JUMP INPUT
+
+LEFT_STOP:
+	SWAB
+	ST (SYMBOL)
+	HLT
+
+RIGHT_STOP:
+	LD (SYMBOL)
+	ADD TEMP_SYMBOL ; Грузим второй символ в правую часть
+	ST (SYMBOL)+
+	HLT
